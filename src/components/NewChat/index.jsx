@@ -27,7 +27,7 @@ export default function NewChat ({ user, chatList, show, setShowNewChat }) {
   }
 
   return (
-    <div className="newChat" style={{ left: show ? '0' : '-415px' }}>
+    <div className="newChat" style={{ left: show ? '0' : '-100%' }}>
       <div className="newChat--head">
         <div className="newChat--back-button" onClick={() => setShowNewChat(false)}>
           <ArrowBack style={{ color: "#FFF" }} />

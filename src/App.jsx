@@ -1,4 +1,4 @@
-import { DonutLarge, Chat, MoreVert, Search } from "@material-ui/icons";
+import { Chat, MoreVert, Search, Menu } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import "./App.css";
 import ChatIntro from "./components/ChatIntro";
@@ -15,6 +15,7 @@ export default function App() {
 	const [activeChat, setActiveChat] = useState({});
 	const [showNewChat, setShowNewChat] = useState(false);
 	const [showSubMenu, setShowSubMenu] = useState(false);
+	const [hideSideBar, setHideSideBar] = useState(false);
 
 	const handleNewUser = async user => {
 		let newUser = {
@@ -56,7 +57,10 @@ export default function App() {
 
 	return (
 		<div className="app-window">
-			<div className="sidebar">
+			<div className="header--btn menu" onClick={() => setHideSideBar(!hideSideBar)}>
+				<Menu style={{ color: "#919191" }} />
+			</div>
+			<div className={`sidebar ${hideSideBar ? 'hide' : ''}`}>
 				<NewChat
 					chatList={chatList}
 					user={user}
@@ -74,10 +78,6 @@ export default function App() {
 					</div>
 
 					<div className="header--buttons">
-						<div className="header--btn">
-							<DonutLarge style={{ color: "#919191" }} />
-						</div>
-
 						<div className="header--btn" onClick={() => setShowNewChat(true)}>
 							<Chat style={{ color: "#919191" }} />
 						</div>
@@ -104,7 +104,10 @@ export default function App() {
 							key={key}
 							chat={chat}
 							active={activeChat.chatId === chat.chatId}
-							onClick={() => setActiveChat(chat)}
+							onClick={() => {
+								setActiveChat(chat);
+								setHideSideBar(true);
+							}}
 						/>
 					))}
 				</div>
