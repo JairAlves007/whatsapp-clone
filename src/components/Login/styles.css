@@ -4,13 +4,14 @@
 	justify-content: center;
 	align-items: center;
   background-color: #fff;
+	padding: 0 10px;
 }
 
 .login button {
-	width: 400px;
-	height: 100px;
+	width: 250px;
+	height: 60px;
   color: #fff;
-  font-size: 24px;
+  font-size: 14px;
   font-weight: 900;
   cursor: pointer;
   border: none;
@@ -24,5 +25,5 @@
 }
 
 .login button svg {
-	width: 50px;
+	width: 30px;
 }
