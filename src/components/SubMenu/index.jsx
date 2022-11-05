@@ -10,7 +10,7 @@ export default function SubMenu({ show, setUser }) {
 
 	return (
 		<div className={`submenu ${show ? "show" : ""}`}>
-			<ul>
+			<ul className="submenu--list">
 				<li onClick={handleSignOut}>
 					Sair
 					<svg
