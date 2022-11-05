@@ -1,0 +1,28 @@
+.login {
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  background-color: #fff;
+}
+
+.login button {
+	width: 400px;
+	height: 100px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 900;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  border-radius: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  gap: 10px;
+	background: rgba(220,67,57,1);
+}
+
+.login button svg {
+	width: 50px;
+}
