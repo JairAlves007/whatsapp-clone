@@ -15,7 +15,20 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const db = firebaseApp.firestore();
 const auth = firebaseApp.auth();
+const spawnNotification = notify => {
+	const icon = notify.avatar;
+	const body = notify.body;
+	const notificationPopUp = new Notification("Mensagem nova: ", {
+		body,
+		icon
+	});
 
+	const audio = new Audio("/public/audios/notification.mp3");
+	audio.volume = 0.3;
+	audio.play();
+
+	// return notificationPopUp;
+};
 const formateDate = date => {
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -181,14 +194,15 @@ export default {
 		});
 	},
 	receiveNotification: userId => {
-		return db
-			.collection("notifications")
+		db.collection("notifications")
 			.doc(userId)
 			.onSnapshot(notification => {
 				if (notification.exists) {
 					const notifications = [...notification.data().notifications];
 
 					if (notifications.length > 0) {
+						const notifyMe = [];
+
 						notifications.forEach(item => {
 							if (item) {
 								const now = formateDate(new Date());
@@ -197,11 +211,13 @@ export default {
 								);
 
 								if (messageSendedAt >= now) {
-									const audio = new Audio("/public/audios/notification.mp3");
-									audio.volume = 0.5;
-									audio.play();
+									notifyMe.push(item);
 								}
 							}
+						});
+
+						notifyMe.forEach(item => {
+							spawnNotification(item);
 						});
 					}
 				}
