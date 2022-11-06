@@ -44,7 +44,7 @@ export default function App() {
 	}, []);
 
 	useEffect(() => {
-		if ("Notification" in window) {
+		if ("Notification" in window && user) {
 			Notification.requestPermission().then(notification => {
 				setNotificationIsGranted(notification === "granted");
 			});
