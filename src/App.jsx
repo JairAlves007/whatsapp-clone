@@ -16,6 +16,7 @@ export default function App() {
 	const [showNewChat, setShowNewChat] = useState(false);
 	const [showSubMenu, setShowSubMenu] = useState(false);
 	const [hideSideBar, setHideSideBar] = useState(false);
+	const [notificationIsGranted, setNotificationIsGranted] = useState(false);
 
 	const handleNewUser = async user => {
 		let newUser = {
@@ -36,20 +37,37 @@ export default function App() {
 					name: userGoogle.displayName,
 					avatar: userGoogle.photoURL
 				};
-				
+
 				setUser(newUserGoogle);
 			}
 		});
 	}, []);
 
 	useEffect(() => {
+		if ("Notification" in window) {
+			Notification.requestPermission().then(notification => {
+				setNotificationIsGranted(notification === "granted");
+			});
+		}
+	});
 
+	useEffect(() => {
 		if (user) {
 			let unsubscribe = firebase.onChatList(user.id, setChatList);
-			return unsubscribe;
-		}
 
-	}, [user]);
+			if (notificationIsGranted) {
+				let notification = firebase.receiveNotification(user.id);
+			}
+
+			return () => {
+				unsubscribe();
+
+				if (notificationIsGranted) {
+					notification();
+				}
+			};
+		}
+	}, [user, notificationIsGranted]);
 
 	if (!user) {
 		return <Login onReceive={handleNewUser} />;
@@ -57,20 +75,20 @@ export default function App() {
 
 	return (
 		<div className="app-window">
-			<div className="header--btn menu" onClick={() => setHideSideBar(!hideSideBar)}>
+			<div
+				className="header--btn menu"
+				onClick={() => setHideSideBar(!hideSideBar)}
+			>
 				<Menu style={{ color: "#919191" }} />
 			</div>
-			<div className={`sidebar ${hideSideBar ? 'hide' : ''}`}>
+			<div className={`sidebar ${hideSideBar ? "hide" : ""}`}>
 				<NewChat
 					chatList={chatList}
 					user={user}
 					show={showNewChat}
 					setShowNewChat={setShowNewChat}
 				/>
-				<SubMenu 
-					show={showSubMenu}
-					setUser={setUser}
-				/>
+				<SubMenu show={showSubMenu} setUser={setUser} />
 				<header>
 					<div className="header--user-infos">
 						<img className="header--avatar" src={user?.avatar} alt="" />
@@ -82,7 +100,10 @@ export default function App() {
 							<Chat style={{ color: "#919191" }} />
 						</div>
 
-						<div className="header--btn" onClick={() => setShowSubMenu(!showSubMenu)}>
+						<div
+							className="header--btn"
+							onClick={() => setShowSubMenu(!showSubMenu)}
+						>
 							<MoreVert style={{ color: "#919191" }} />
 						</div>
 					</div>
@@ -115,7 +136,11 @@ export default function App() {
 
 			<div className="content-area">
 				{activeChat.chatId ? (
-					<ChatWindow activeChat={activeChat} user={user} />
+					<ChatWindow
+						activeChat={activeChat}
+						user={user}
+						notificationIsGranted={notificationIsGranted}
+					/>
 				) : (
 					<ChatIntro />
 				)}

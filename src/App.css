@@ -6,6 +6,7 @@
 
 body {
   font-family: 'Segoe UI', Helvetica Neue, Helvetica, Lucida Grande, Arial;
+  height: 100vh;
 }
 
 .app-window {

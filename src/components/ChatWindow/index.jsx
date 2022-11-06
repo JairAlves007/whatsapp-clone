@@ -12,7 +12,7 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import MessageItem from "../MessageItem";
-import firebase from '../../services/firebase';
+import firebase from "../../services/firebase";
 import "./styles.css";
 
 export default function ChatWindow({ activeChat, user }) {
@@ -22,29 +22,31 @@ export default function ChatWindow({ activeChat, user }) {
 	const [emojiOpen, setEmojiOpen] = useState(false);
 	const [listening, setListening] = useState(false);
 
-  const body = useRef();
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let recognition = null;
+	const body = useRef();
+	const SpeechRecognition =
+		window.SpeechRecognition || window.webkitSpeechRecognition;
+	let recognition = null;
 
-  useEffect(() => {
+	useEffect(() => {
+		setMessageList([]);
+		let unsubscribe = firebase.onChatContent(
+			activeChat.chatId,
+			setMessageList,
+			setUsers
+		);
+		return unsubscribe;
+	}, [activeChat.chatId]);
 
-    setMessageList([]);
-    let unsubscribe = firebase.onChatContent(activeChat.chatId, setMessageList, setUsers);
-    return unsubscribe;
+	useEffect(() => {
+		if (body.current.scrollHeight > body.current.offsetHeight) {
+			body.current.scrollTop =
+				body.current.scrollHeight - body.current.offsetHeight;
+		}
+	}, [messageList]);
 
-  }, [activeChat.chatId]);
-
-  useEffect(() => {
-
-    if (body.current.scrollHeight > body.current.offsetHeight) {
-      body.current.scrollTop = body.current.scrollHeight - body.current.offsetHeight;
-    }
-
-  }, [messageList]);
-  
-  if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-  }
+	if (SpeechRecognition) {
+		recognition = new SpeechRecognition();
+	}
 
 	function handleEmojiClick({ emoji }) {
 		setMessage(message + emoji);
@@ -54,35 +56,31 @@ export default function ChatWindow({ activeChat, user }) {
 		event.preventDefault();
 
 		if (message.trim().length > 0) {
-      firebase.sendMessage(activeChat, user.id, 'text', message, users);
+			firebase.sendMessage(activeChat, user.id, "text", message, users);
 			setMessage("");
-      setEmojiOpen(false);
+			setEmojiOpen(false);
 		}
 	}
 
-  function handleMicClick () {
-    if (recognition) {
-      recognition.onstart = () => setListening(true);
+	function handleMicClick() {
+		if (recognition) {
+			recognition.onstart = () => setListening(true);
 
-      recognition.onend = () => setListening(false);
+			recognition.onend = () => setListening(false);
 
-      recognition.onresult = event => {
-        setMessage(event.results[0][0].transcript);
-      }
+			recognition.onresult = event => {
+				setMessage(event.results[0][0].transcript);
+			};
 
-      recognition.start();
-    }
-  }
+			recognition.start();
+		}
+	}
 
 	return (
 		<div className="chatWindow">
 			<div className="chatWindow--header">
 				<div className="chatWindow--header-info">
-					<img
-						className="chatWindow--avatar"
-						src={activeChat.avatar}
-						alt=""
-					/>
+					<img className="chatWindow--avatar" src={activeChat.avatar} alt="" />
 					<div className="chatWindow--name">{activeChat.name}</div>
 				</div>
 
@@ -98,18 +96,10 @@ export default function ChatWindow({ activeChat, user }) {
 			</div>
 
 			<div ref={body} className="chatWindow--body">
-
-        {
-          messageList.map((message, key) => (
-            <MessageItem 
-              user={user}
-              key={key}
-              message={message}
-            />
-          ))
-        }
-
-      </div>
+				{messageList.map((message, key) => (
+					<MessageItem user={user} key={key} message={message} />
+				))}
+			</div>
 
 			<div
 				className="chatWindow--emoji-area"
@@ -166,7 +156,7 @@ export default function ChatWindow({ activeChat, user }) {
 					<div
 						className="chatWindow--btn"
 						style={{ display: message.trim().length > 0 ? "none" : "flex" }}
-            onClick={handleMicClick}
+						onClick={handleMicClick}
 					>
 						<Mic style={{ color: listening ? "#126ECE" : "#919191" }} />
 					</div>
