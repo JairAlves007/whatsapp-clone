@@ -23,10 +23,10 @@ const spawnNotification = notify => {
 		icon
 	});
 
-	const audio = new Audio("/public/audios/notification.mp3");
+	const audio = new Audio("/audios/notification.mp3");
 	audio.volume = 0.3;
 	audio.play();
-
+	console.log('nenyyy');
 	// return notificationPopUp;
 };
 const formateDate = date => {
